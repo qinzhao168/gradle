@@ -36,6 +36,7 @@ import org.gradle.api.tasks.WorkResult;
 import org.gradle.process.ExecResult;
 import org.gradle.process.ExecSpec;
 import org.gradle.process.JavaExecSpec;
+import org.gradle.process.daemon.WorkerDaemonService;
 
 import java.io.File;
 import java.net.URI;
@@ -1493,4 +1494,11 @@ public interface Project extends Comparable<Project>, ExtensionAware, PluginAwar
      */
     @Incubating
     SoftwareComponentContainer getComponents();
+
+    /**
+     * Provides access to daemon process utility methods, for example to start new daemon processes that run specific operations.
+     *
+     * @return A service object that can be used to start daemon processes.
+     */
+    WorkerDaemonService getDaemons();
 }
