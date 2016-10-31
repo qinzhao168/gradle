@@ -18,6 +18,7 @@ package org.gradle.process.internal
 
 import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import org.gradle.util.TextUtil
+import spock.lang.Ignore
 
 
 class WorkerDaemonServiceIntegrationTest extends AbstractIntegrationSpec {
@@ -60,6 +61,64 @@ class WorkerDaemonServiceIntegrationTest extends AbstractIntegrationSpec {
         """
         buildFile << """
             import org.gradle.test.MyRunnable
+
+            class MyTask extends DefaultTask {
+                def list = []
+
+                @TaskAction
+                void executeTask() {
+                    project.daemons.daemonRunnable()
+                        .forkOptions { it.workingDir(project.projectDir) }
+                        .implementationClass(MyRunnable.class)
+                        .params(list.collect { it as String }, new File("${outputFileDirPath}"))
+                        .build()
+                        .run()
+                }
+            }
+
+            task runActions(type: MyTask) {
+                list = $list
+            }
+        """
+
+        when:
+        succeeds("runActions")
+
+        then:
+        list.each {
+            outputFileDir.file(it).assertExists()
+        }
+    }
+
+    @Ignore
+    def "can create and use a daemon runnable defined in build script"() {
+        def outputFileDir = file("build/worker")
+        def outputFileDirPath = TextUtil.normaliseFileSeparators(outputFileDir.absolutePath)
+        def list = [ 1, 2, 3 ]
+
+        buildFile << """
+            class MyRunnable implements Runnable {
+                private final List<String> files;
+                private File outputDir;
+
+                public MyRunnable(List<String> files, File outputDir) {
+                    this.files = files;
+                    this.outputDir = outputDir;
+                }
+
+                public void run() {
+                    outputDir.mkdirs();
+
+                    for (String name : files) {
+                        try {
+                            File outputFile = new File(outputDir, name);
+                            outputFile.createNewFile();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
 
             class MyTask extends DefaultTask {
                 def list = []
