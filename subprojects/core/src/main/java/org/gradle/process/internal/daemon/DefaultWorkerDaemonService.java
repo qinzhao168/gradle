@@ -17,7 +17,7 @@
 package org.gradle.process.internal.daemon;
 
 import org.gradle.api.internal.file.FileResolver;
-import org.gradle.process.daemon.WorkerDaemonBuilder;
+import org.gradle.process.daemon.WorkerDaemonExecutor;
 import org.gradle.process.daemon.WorkerDaemonService;
 
 public class DefaultWorkerDaemonService implements WorkerDaemonService {
@@ -30,7 +30,7 @@ public class DefaultWorkerDaemonService implements WorkerDaemonService {
     }
 
     @Override
-    public WorkerDaemonBuilder<Runnable> daemonRunnable(Class<? extends Runnable> runnableClass) {
-        return new WorkerDaemonRunnableBuilder(workerDaemonFactory, fileResolver).implementationClass(runnableClass);
+    public WorkerDaemonExecutor daemonRunnable(Class<? extends Runnable> runnableClass) {
+        return new WorkerDaemonRunnableExecutor(workerDaemonFactory, fileResolver, runnableClass);
     }
 }

@@ -23,42 +23,41 @@ import org.gradle.api.internal.file.FileResolver;
 import org.gradle.internal.classloader.ClasspathUtil;
 import org.gradle.process.JavaForkOptions;
 import org.gradle.process.daemon.DaemonForkOptions;
-import org.gradle.process.daemon.WorkerDaemonBuilder;
+import org.gradle.process.daemon.WorkerDaemonExecutor;
 import org.gradle.process.internal.DefaultJavaForkOptions;
 import org.gradle.util.GUtil;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Set;
 
-public abstract class AbstractWorkerDaemonBuilder<T> implements WorkerDaemonBuilder<T> {
+public abstract class AbstractWorkerDaemonExecutor<T> implements WorkerDaemonExecutor<T> {
     private final WorkerDaemonFactory workerDaemonFactory;
-    private final FileResolver fileResolver;
     private final JavaForkOptions javaForkOptions;
     private final Set<File> classpath = Sets.newLinkedHashSet();
     private final Set<String> sharedPackages = Sets.newLinkedHashSet();
     private Class<? extends T> implementationClass;
-    private Object[] params;
+    private Serializable[] params;
 
-    public AbstractWorkerDaemonBuilder(WorkerDaemonFactory workerDaemonFactory, FileResolver fileResolver) {
+    public AbstractWorkerDaemonExecutor(WorkerDaemonFactory workerDaemonFactory, FileResolver fileResolver) {
         this.workerDaemonFactory = workerDaemonFactory;
-        this.fileResolver = fileResolver;
         this.javaForkOptions = new DefaultJavaForkOptions(fileResolver);
     }
 
     @Override
-    public WorkerDaemonBuilder<T> classpath(Iterable<File> files) {
+    public WorkerDaemonExecutor<T> classpath(Iterable<File> files) {
         GUtil.addToCollection(classpath, files);
         return this;
     }
 
     @Override
-    public WorkerDaemonBuilder<T> sharedPackages(Iterable<String> packages) {
+    public WorkerDaemonExecutor<T> sharedPackages(Iterable<String> packages) {
         GUtil.addToCollection(sharedPackages, packages);
         return this;
     }
 
     @Override
-    public WorkerDaemonBuilder<T> forkOptions(Action<JavaForkOptions> forkOptionsAction) {
+    public WorkerDaemonExecutor<T> forkOptions(Action<JavaForkOptions> forkOptionsAction) {
         forkOptionsAction.execute(javaForkOptions);
         return this;
     }
@@ -69,13 +68,13 @@ public abstract class AbstractWorkerDaemonBuilder<T> implements WorkerDaemonBuil
     }
 
     @Override
-    public WorkerDaemonBuilder<T> implementationClass(Class<? extends T> implementationClass) {
+    public WorkerDaemonExecutor<T> implementationClass(Class<? extends T> implementationClass) {
         this.implementationClass = implementationClass;
         return this;
     }
 
     @Override
-    public WorkerDaemonBuilder<T> params(Object... params) {
+    public WorkerDaemonExecutor<T> params(Serializable... params) {
         this.params = params;
         return this;
     }

@@ -20,17 +20,17 @@ import org.gradle.api.Transformer;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.internal.reflect.DirectInstantiator;
 import org.gradle.process.daemon.DaemonForkOptions;
-import org.gradle.process.daemon.WorkerDaemonBuilder;
 import org.gradle.util.CollectionUtils;
 
-public class WorkerDaemonRunnableBuilder extends AbstractWorkerDaemonBuilder<Runnable> implements WorkerDaemonBuilder<Runnable> {
+public class WorkerDaemonRunnableExecutor extends AbstractWorkerDaemonExecutor<Runnable> {
 
-    WorkerDaemonRunnableBuilder(WorkerDaemonFactory workerDaemonFactory, FileResolver fileResolver) {
+    WorkerDaemonRunnableExecutor(WorkerDaemonFactory workerDaemonFactory, FileResolver fileResolver, Class<? extends Runnable> implementationClass) {
         super(workerDaemonFactory, fileResolver);
+        implementationClass(implementationClass);
     }
 
     @Override
-    public Runnable build() {
+    public void execute() {
         final ParamSpec spec = new ParamSpec(getParams());
         final WrappedDaemonRunnable daemonRunnable = new WrappedDaemonRunnable(getImplementationClass());
         Iterable<Class<?>> paramTypes = CollectionUtils.collect(getParams(), new Transformer<Class<?>, Object>() {
@@ -41,13 +41,8 @@ public class WorkerDaemonRunnableBuilder extends AbstractWorkerDaemonBuilder<Run
         });
         final DaemonForkOptions daemonForkOptions = toDaemonOptions(getImplementationClass(), paramTypes, getForkOptions(), getClasspath(), getSharedPackages());
 
-        return new Runnable() {
-            @Override
-            public void run() {
-                WorkerDaemon daemon = getWorkerDaemonFactory().getDaemon(getForkOptions().getWorkingDir(), daemonForkOptions);
-                daemon.execute(daemonRunnable, spec);
-            }
-        };
+        WorkerDaemon daemon = getWorkerDaemonFactory().getDaemon(getForkOptions().getWorkingDir(), daemonForkOptions);
+        daemon.execute(daemonRunnable, spec);
     }
 
     private static class ParamSpec implements WorkSpec {

@@ -71,8 +71,7 @@ class WorkerDaemonServiceIntegrationTest extends AbstractIntegrationSpec {
                         .forkOptions { it.workingDir(project.projectDir) }
                         .implementationClass(MyRunnable.class)
                         .params(list.collect { it as String }, new File("${outputFileDirPath}"))
-                        .build()
-                        .run()
+                        .execute()
                 }
             }
 
@@ -125,10 +124,11 @@ class WorkerDaemonServiceIntegrationTest extends AbstractIntegrationSpec {
 
                 @TaskAction
                 void executeTask() {
-                    def daemonForkOptions = project.daemons.newForkOptions()
-                    daemonForkOptions.workingDir = project.projectDir
-                    Runnable runnable = project.daemons.daemonRunnable(daemonForkOptions, [], [], MyRunnable.class, list.collect { it as String }, new File("${outputFileDirPath}"))
-                    runnable.run()
+                    project.daemons.daemonRunnable()
+                        .forkOptions { it.workingDir(project.projectDir) }
+                        .implementationClass(MyRunnable.class)
+                        .params(list.collect { it as String }, new File("${outputFileDirPath}"))
+                        .execute()
                 }
             }
 

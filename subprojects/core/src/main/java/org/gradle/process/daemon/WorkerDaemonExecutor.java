@@ -20,15 +20,16 @@ import org.gradle.api.Action;
 import org.gradle.process.JavaForkOptions;
 
 import java.io.File;
+import java.io.Serializable;
 
-public interface WorkerDaemonBuilder<T> {
+public interface WorkerDaemonExecutor<T> {
     /**
      * Adds a set of files to the classpath associated with the daemon process.
      *
      * @param files - the files to add to the classpath
      * @return this builder
      */
-    WorkerDaemonBuilder<T> classpath(Iterable<File> files);
+    WorkerDaemonExecutor<T> classpath(Iterable<File> files);
 
     /**
      * Adds a set of shared packages to the packages exposed to this daemon process.
@@ -36,7 +37,7 @@ public interface WorkerDaemonBuilder<T> {
      * @param packages - the packages to add
      * @return this builder
      */
-    WorkerDaemonBuilder<T> sharedPackages(Iterable<String> packages);
+    WorkerDaemonExecutor<T> sharedPackages(Iterable<String> packages);
 
     /**
      * Executes the provided action against the {@link JavaForkOptions} object associated with this builder.
@@ -44,7 +45,7 @@ public interface WorkerDaemonBuilder<T> {
      * @param forkOptionsAction - An action to configure the {@link JavaForkOptions} for this builder
      * @return this builder
      */
-    WorkerDaemonBuilder<T> forkOptions(Action<JavaForkOptions> forkOptionsAction);
+    WorkerDaemonExecutor<T> forkOptions(Action<JavaForkOptions> forkOptionsAction);
 
     /**
      * Returns the {@link JavaForkOptions} object associated with this builder.
@@ -59,7 +60,7 @@ public interface WorkerDaemonBuilder<T> {
      * @param implementationClass - the implementation class to use
      * @return this builder
      */
-    WorkerDaemonBuilder<T> implementationClass(Class<? extends T> implementationClass);
+    WorkerDaemonExecutor<T> implementationClass(Class<? extends T> implementationClass);
 
     /**
      * Sets any initialization parameters to use when constructing an instance of the implementation class.
@@ -67,12 +68,10 @@ public interface WorkerDaemonBuilder<T> {
      * @param params - the parameters to use during construction
      * @return this builder
      */
-    WorkerDaemonBuilder<T> params(Object... params);
+    WorkerDaemonExecutor<T> params(Serializable... params);
 
     /**
-     * Builds the object to use in a daemon process.
-     *
-     * @return an object backed by a daemon process.
+     * Synchronously executes the task in a daemon process.
      */
-    T build();
+    void execute();
 }
