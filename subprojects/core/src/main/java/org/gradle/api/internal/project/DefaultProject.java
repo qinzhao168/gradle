@@ -1082,7 +1082,7 @@ public class DefaultProject extends AbstractPluginAware implements ProjectIntern
     }
 
     @Inject
-    public WorkerDaemonService getDaemons() {
+    public WorkerDaemonService getWorkerDaemons() {
         // Decoration takes care of the implementation
         throw new UnsupportedOperationException();
     }

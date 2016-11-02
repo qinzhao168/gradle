@@ -1496,9 +1496,9 @@ public interface Project extends Comparable<Project>, ExtensionAware, PluginAwar
     SoftwareComponentContainer getComponents();
 
     /**
-     * Provides access to daemon process utility methods, for example to start new daemon processes that run specific operations.
+     * Provides access to worker daemon process utility methods, for example to start new daemon processes that run specific operations.
      *
      * @return A service object that can be used to start daemon processes.
      */
-    WorkerDaemonService getDaemons();
+    WorkerDaemonService getWorkerDaemons();
 }

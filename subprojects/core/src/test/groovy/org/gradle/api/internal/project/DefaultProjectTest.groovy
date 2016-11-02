@@ -70,6 +70,7 @@ import org.gradle.internal.service.scopes.ServiceRegistryFactory
 import org.gradle.model.internal.manage.instance.ManagedProxyFactory
 import org.gradle.model.internal.manage.schema.ModelSchemaStore
 import org.gradle.model.internal.registry.ModelRegistry
+import org.gradle.process.daemon.WorkerDaemonService
 import org.gradle.test.fixtures.file.TestNameTestDirectoryProvider
 import org.gradle.util.JUnit4GroovyMockery
 import org.gradle.util.TestClosure
@@ -132,6 +133,7 @@ class DefaultProjectTest {
     PluginContainer pluginContainer = context.mock(PluginContainer.class)
     ManagedProxyFactory managedProxyFactory = context.mock(ManagedProxyFactory.class)
     AntLoggingAdapter antLoggingAdapter = context.mock(AntLoggingAdapter.class)
+    WorkerDaemonService workerDaemonService = context.mock(WorkerDaemonService.class)
 
     ClassLoaderScope baseClassLoaderScope = new RootClassLoaderScope(getClass().classLoader, getClass().classLoader, new DummyClassLoaderCache())
     ClassLoaderScope rootProjectClassLoaderScope = baseClassLoaderScope.createChild("root-project")
@@ -186,6 +188,7 @@ class DefaultProjectTest {
             allowing(serviceRegistryMock).get((Type) ProjectConfigurationActionContainer); will(returnValue(configureActions))
             allowing(serviceRegistryMock).get((Type) PluginManagerInternal); will(returnValue(pluginManager))
             allowing(serviceRegistryMock).get(ManagedProxyFactory); will(returnValue(managedProxyFactory))
+            allowing(serviceRegistryMock).get((Type) WorkerDaemonService); will(returnValue(workerDaemonService))
             allowing(pluginManager).getPluginContainer(); will(returnValue(pluginContainer))
 
             allowing(serviceRegistryMock).get((Type) DeferredProjectConfiguration); will(returnValue(context.mock(DeferredProjectConfiguration)))
