@@ -72,7 +72,7 @@ task toolingApiJar(type: Zip) {
     baseName = 'gradle-tooling-api-shaded'
     destinationDir file("$temporaryDir/")
     extension 'jar'
-    version version
+    version baseVersion
 }
 
 task testToolingApiJar(type: Zip) {
@@ -84,7 +84,7 @@ task testToolingApiJar(type: Zip) {
     baseName = 'gradle-tooling-api-shaded'
     destinationDir file("$temporaryDir/")
     extension 'jar'
-    version testedVersion
+    version baseVersion
 }
 
 apply from: 'buildship.gradle'
