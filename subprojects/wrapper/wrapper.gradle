@@ -31,12 +31,12 @@ ext {
 }
 
 task wrapperBuildReceiptResource() {
-    inputs.property 'version', { version }
+    inputs.property 'version', { project(":versionInfo").createTestBuildReceipt.versionNumber }
     outputs.file { "${generatedTestResourcesDir}/${wrapperBuildReceipt}" }
     outputs.cacheIf { true }
     doLast {
         generatedTestResourcesDir.mkdirs()
-        new File(generatedTestResourcesDir, wrapperBuildReceipt).text = "versionNumber=${version}"
+        new File(generatedTestResourcesDir, wrapperBuildReceipt).text = "versionNumber=${project(":versionInfo").createTestBuildReceipt.versionNumber}"
     }
 }
 sourceSets.test.output.dir generatedTestResourcesDir, builtBy: wrapperBuildReceiptResource
