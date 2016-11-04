@@ -45,18 +45,22 @@ distributionTestTasks.all { DistributionTest task ->
         doLast {
             configure(task) {
                 reports.html.destination = file("${project.reporting.baseDir}/$name")
-                systemProperties['integTest.gradleHomeDir'] = rootProject.intTestImage.destinationDir.absolutePath
-                systemProperties['integTest.gradleUserHomeDir'] = rootProject.file('intTestHomeDir').absolutePath
-                systemProperties['integTest.libsRepo'] = rootProject.file('build/repo')
-                systemProperties['integTest.toolingApiShadedJarDir'] = rootProject.project(':toolingApi').shadedJar.outputDir
+                inputs.property 'systemProperties', [:]
 
-                // If the projects int test need the distributions, they should add:
-                // inputs.files rootProject.buildDists
-                systemProperties['integTest.distsDir'] = rootProject.distsDir.absolutePath
+                fileSystemProperties(
+                    'integTest.gradleHomeDir': rootProject.intTestImage.destinationDir,
+                    'integTest.gradleUserHomeDir': rootProject.file('intTestHomeDir'),
+                    'integTest.libsRepo': rootProject.file('build/repo'),
+                    'integTest.toolingApiShadedJarDir': rootProject.project(':toolingApi').shadedJar.outputDir,
 
-                // The user home dir is not wiped out by clean
-                // Move the daemon working space underneath the build dir so they don't pile up on CI
-                systemProperties['org.gradle.integtest.daemon.registry'] = file("$rootProject.buildDir/daemon").absolutePath
+                    // If the projects int test need the distributions, they should add:
+                    // inputs.files rootProject.buildDists
+                    'integTest.distsDir': rootProject.distsDir,
+
+                    // The user home dir is not wiped out by clean
+                    // Move the daemon working space underneath the build dir so they don't pile up on CI
+                    'org.gradle.integtest.daemon.registry': file("$rootProject.buildDir/daemon")
+                )
             }
         }
     }
