@@ -17,6 +17,11 @@
 package org.gradle.testing
 
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.os.OperatingSystem
 
@@ -32,6 +37,69 @@ class DistributionTest extends Test {
     @Input
     Map<String, Object> getPlainSystemProperties() {
         super.getSystemProperties() - fileSystemProperties.collectEntries { key, value -> [(key): value.absolutePath]}
+    }
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File gradleHomeDir
+
+    void setGradleHomeDir(File gradleHomeDir) {
+        this.gradleHomeDir = gradleHomeDir
+        fileSystemProperty('integTest.gradleHomeDir', gradleHomeDir)
+    }
+
+    @Internal
+    File gradleUserHomeDir
+
+    void setGradleUserHomeDir(File gradleUserHomeDir) {
+        this.gradleUserHomeDir = gradleUserHomeDir
+        fileSystemProperty('integTest.gradleUserHomeDir', gradleUserHomeDir)
+    }
+
+    @Optional
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File libsRepo
+
+    void setLibsRepo(File libsRepo) {
+        this.libsRepo = libsRepo
+        fileSystemProperty('integTest.libsRepo', libsRepo)
+    }
+
+    @Input
+    boolean requiresLibsRepo
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File toolingApiShadedJarDir
+
+    void setToolingApiShadedJarDir(File toolingApiShadedJarDir) {
+        this.toolingApiShadedJarDir = toolingApiShadedJarDir
+        fileSystemProperty('integTest.toolingApiShadedJarDir', toolingApiShadedJarDir)
+    }
+
+    @Optional
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File distsDir
+
+    @Input
+    boolean requiresDists
+
+    void setDistsDir(File distsDir) {
+        this.distsDir = distsDir
+        fileSystemProperty('integTest.distsDir', distsDir)
+    }
+
+    /** The user home dir is not wiped out by clean
+     *  Move the daemon working space underneath the build dir so they don't pile up on CI
+     */
+    @Internal
+    File daemonRegistry
+
+    void setDaemonRegistry(File daemonRegistry) {
+        this.daemonRegistry = daemonRegistry
+        fileSystemProperty('org.gradle.integtest.daemon.registry', daemonRegistry)
     }
 
     private Map<String, File> fileSystemProperties = [:]
