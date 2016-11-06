@@ -19,6 +19,7 @@ package org.gradle.testing
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
@@ -104,7 +105,7 @@ class DistributionTest extends Test {
     }
 
     @Optional
-    @InputDirectory
+    @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
     FileCollection getBinDistContents() {
         binDist ? project.zipTree(binDist) : null
